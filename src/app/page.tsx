@@ -1,20 +1,10 @@
-// src/app/page.tsx
-import { getGames } from '@/utils/api';
-import GameCard from '@/components/game/GameCard';
+import GameList from "@/components/game/GameList";
 
-async function HomePage() {
-  const games = await getGames();
-
+export default function HomePage() {
   return (
     <main>
-      <h1>เกมแนะนำ</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {games.map((game) => (
-          <GameCard key={game.id} game={game} />
-        ))}
-      </div>
+      <h1>🔥 Popular Games</h1>
+      <GameList />
     </main>
   );
 }
-
-export default HomePage;
