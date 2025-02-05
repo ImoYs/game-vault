@@ -1,3 +1,4 @@
+//page.tsx
 import GameList from "@/components/game/GameList";
 
 export default function HomePage() {
