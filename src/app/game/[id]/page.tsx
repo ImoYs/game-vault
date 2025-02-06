@@ -1,20 +1,53 @@
-import { fetchGames } from "@/utils/api";
+import { fetchGameDetails } from "@/utils/api";
 
-export default async function ApiTestPage() {
-  const data = await fetchGames();
+export default async function GameDetailPage({ params }: { params: { id: string } }) {
+  const game = await fetchGameDetails(params.id);
 
-  if (!data) {
-    return <p className="text-red-500">Failed to fetch data</p>;
+  if (!game) {
+    return <p>Game not found</p>;
   }
 
   return (
-    <div>
-      <h1 className="text-xl font-bold">API Test Page</h1>
-      <ul>
-        {data.results.map((game: any) => (
-          <li key={game.id}>{game.name}</li>
-        ))}
-      </ul>
-    </div>
+    <main className="game-detail">
+      <div className="game-header">
+        <h1>{game.name}</h1>
+        <img src={game.background_image} alt={game.name} className="game-banner" />
+      </div>
+
+      <div className="game-info">
+        <h2>📝 About</h2>
+        <p>{game.description_raw}</p>
+
+        <div className="info-grid">
+          <div>
+            <h3>🕹️ Genres</h3>
+            <ul>
+              {game.genres.map((genre: any) => (
+                <li key={genre.id}>{genre.name}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3>🎮 Platforms</h3>
+            <ul>
+              {game.platforms.map((platform: any) => (
+                <li key={platform.platform.id}>{platform.platform.name}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3>⭐ Ratings</h3>
+            <p>Metacritic: {game.metacritic ?? "N/A"}</p>
+          </div>
+
+          <div>
+            <h3>📅 Released</h3>
+            <p>{game.released}</p>
+          </div>
+        </div>
+      </div>
+    </main>
   );
 }

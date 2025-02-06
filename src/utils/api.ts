@@ -30,3 +30,15 @@ export async function fetchGenres() {
     return [];
   }
 }
+
+export async function fetchGameDetails(id: string) {
+  try {
+    const response = await fetch(`${BASE_URL}/games/${id}?key=${API_KEY}`);
+    if (!response.ok) throw new Error("Failed to fetch game details");
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching game details:", error);
+    return null;
+  }
+}
