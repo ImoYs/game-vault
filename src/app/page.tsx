@@ -1,12 +1,14 @@
 //page.tsx
-import GameList from "@/components/game/GameList";
+import Pgame from "@/components/game/Populargame";
 import Navbar from "@/components/Navbar/Navbar";
+import NavSidebar from "@/components/Navbar/NavSidebar";
 export default function HomePage() {
   return (
     <main>
-      <Navbar />
+      <Navbar/>
+      <NavSidebar/>
       <h1>🔥 Popular Games</h1>
-      {/* <GameList /> */}
+      <Pgame />
     </main>
   );
 }

@@ -13,8 +13,8 @@ export default function Navbar() {
           <Link href="/">My Website</Link>
         </div>
         <div className="space-x-4">
-          <Link href="/about" className="hover:underline">
-            About
+          <Link href="/" className="hover:underline">
+            home
           </Link>
           <Link href="/games" className="hover:underline">
             Games
