@@ -1,8 +1,7 @@
-"use client"; // ระบุว่าเป็น Client Component
-
-import { SessionProvider } from "next-auth/react"; // นำเข้า SessionProvider
+import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../styles/globals.css";
+import Providers from "../components/Providers"; // ⬅️ Import SessionProvider ที่แยกออกไป
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,18 +13,16 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export const metadata: Metadata = {
+  title: "Game Vault",
+  description: "A gaming website with user authentication",
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {/* ใช้ SessionProvider รอบ ๆ children เพื่อให้การจัดการ session ถูกต้อง */}
-        <SessionProvider>{children}</SessionProvider>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <Providers>{children}</Providers> {/* ⬅️ ห่อด้วย Providers */}
       </body>
     </html>
   );

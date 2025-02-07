@@ -1,7 +1,6 @@
-//\src\app\api\auth\route.ts
 import NextAuth from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 
 const handler = NextAuth({
   providers: [
@@ -16,7 +15,7 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        // 🔹 เชื่อมต่อฐานข้อมูลเพื่อตรวจสอบผู้ใช้ (สามารถใช้ MongoDB หรือ Supabase)
+        // 🔹 เช็ค email/password (กรณีนี้เป็น mock data)
         if (credentials?.email === "test@example.com" && credentials?.password === "password123") {
           return { id: "1", name: "Test User", email: credentials.email };
         }
@@ -26,7 +25,7 @@ const handler = NextAuth({
   ],
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
-    signIn: "/auth/signin", // หน้า Custom Sign-in
+    signIn: "/auth/signin",
   },
 });
 
