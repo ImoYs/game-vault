@@ -1,4 +1,3 @@
-// /src/app/auth/signin/page.tsx
 "use client";
 
 import { signIn } from "next-auth/react";
@@ -65,6 +64,14 @@ export default function SignIn() {
             Login
           </button>
         </form>
+
+        {/* 🔹 เพิ่มลิงก์ Sign Up */}
+        <p className="mt-4 text-center text-gray-600">
+          Don't have an account?{" "}
+          <a href="/auth/signup" className="text-blue-500 hover:underline">
+            Sign Up
+          </a>
+        </p>
       </div>
     </div>
   );

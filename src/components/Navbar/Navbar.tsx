@@ -32,6 +32,13 @@ export default function Navbar() {
               Login
             </Link>
           )}
+          <Link href="/auth/signup" className="hover:underline">
+            Sign Up
+          </Link>
+          <Link href="/auth/signin" className="hover:underline">
+            Login
+          </Link>
+
         </div>
       </div>
     </nav>

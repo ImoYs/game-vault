@@ -1,49 +1,62 @@
-// app/api/auth/[...nextauth]/route.ts
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import GoogleProvider from "next-auth/providers/google";
+import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
-const users = [
-  {
-    id: "1",
-    name: "Test User",
-    email: "test@g.com",
-    password: bcrypt.hashSync("1234", 10), // จำลองรหัสผ่านที่เข้ารหัสไว้
-  },
-];
+const prisma = new PrismaClient();
 
 const handler = NextAuth({
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email", placeholder: "you@example.com" },
-        password: { label: "Password", type: "password" },
+        email: { label: "Email", type: "text", placeholder: "email@example.com" },
+        password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        const user = users.find((u) => u.email === credentials?.email);
-        if (user && bcrypt.compareSync(credentials?.password || "", user.password)) {
-          return { id: user.id, name: user.name, email: user.email };
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Missing email or password");
         }
-        throw new Error("Invalid credentials");
-      },
-    }),
+
+        // ค้นหาผู้ใช้จากฐานข้อมูล
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email }
+        });
+
+        if (!user) {
+          throw new Error("User not found");
+        }
+
+        // ตรวจสอบรหัสผ่านกับ bcrypt
+        const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+        if (!isPasswordValid) {
+          throw new Error("Invalid password");
+        }
+
+        return user;
+      }
+    })
   ],
+  session: { strategy: "jwt" },
   secret: process.env.NEXTAUTH_SECRET,
-  pages: {
-    signIn: "/auth/signin",
-    error: "/auth/error",
-  },
+  pages: { signIn: "/auth/signin" },
   callbacks: {
-    async redirect({ url, baseUrl }) {
-      return baseUrl;
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
     },
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.id;
+      }
+      return session;
+    }
   },
+  debug: true
 });
 
-export { handler as GET, handler as POST };
+// 👇 ใช้สำหรับ Next.js 14+ (App Router)
+export const GET = handler;
+export const POST = handler;
