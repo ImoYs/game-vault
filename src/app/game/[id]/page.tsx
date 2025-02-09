@@ -1,6 +1,14 @@
 import { fetchGameDetails } from "@/utils/api";
 import Navbar from "@/components/Navbar/Navbar";
 import NavSidebar from "@/components/Navbar/NavSidebar";
+
+export async function generateMetadata({ params }: { params: { id: string } }) {
+  return {
+    title: `Game: ${params.id}`,
+    description: "Game details page",
+  };
+}
+
 export default async function GameDetailPage({ params }: { params: { id: string } }) {
   const game = await fetchGameDetails(params.id);
 
@@ -9,10 +17,9 @@ export default async function GameDetailPage({ params }: { params: { id: string 
   }
 
   return (
-    
     <main className="game-detail">
-      <Navbar/>
-      <NavSidebar/>
+      <Navbar />
+      <NavSidebar />
       <div className="game-header">
         <h1>{game.name}</h1>
         <img src={game.background_image} alt={game.name} className="game-banner" />
