@@ -9,12 +9,12 @@ export default function Navbar() {
   const router = useRouter();
 
   const handleLogout = async () => {
-    await signOut({ redirect: false }); // ป้องกันการ Redirect อัตโนมัติ
-    router.push("/"); // กลับไปหน้า Home
+    await signOut({ redirect: false });
+    router.push("/");
   };
 
   return (
-    <nav className="bg-blue-600 text-white">
+    <nav className="bg-black text-white shadow-md">
       <div className="container mx-auto flex justify-between items-center p-4">
         <div className="text-xl font-bold">
           <Link href="/">My Website</Link>
