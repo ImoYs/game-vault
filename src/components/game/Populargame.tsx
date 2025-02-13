@@ -9,12 +9,12 @@ import "swiper/css"; // สไตล์พื้นฐานของ Swiper
 import "swiper/css/pagination"; // สไตล์ Pagination
 import "swiper/css/navigation"; // สไตล์ Navigation
 
-export default function RandomGames() {
+export default function PopularGames() {
   const [games, setGames] = useState<any[]>([]); // เก็บข้อมูลเกมที่เรียงแล้ว
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const loadRandomGames = async () => {
+    const loadPopularGames = async () => {
       setLoading(true);
       try {
         const allGames = await fetchGames(1, 10); // ดึง 10 เกมจาก API
@@ -29,7 +29,7 @@ export default function RandomGames() {
       }
     };
 
-    loadRandomGames();
+    loadPopularGames();
   }, []);
 
   return (
