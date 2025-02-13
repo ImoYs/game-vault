@@ -26,6 +26,9 @@ export default function Navbar() {
           <Link href="/games" className="hover:underline">
             Games
           </Link>
+          <Link href="/comment" className="hover:underline">
+          commenttest
+          </Link>
 
           {session ? (
             <>
