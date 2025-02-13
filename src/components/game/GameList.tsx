@@ -17,28 +17,27 @@ export default function GameList() {
   const pageSize = 20;
 
   useEffect(() => {
-    const loadGenres = async () => {
-      const genreData = await fetchGenres();
-      setGenres(genreData);
-    };
-    loadGenres();
-  }, []);
-
-  useEffect(() => {
     const loadGames = async () => {
       setLoading(true);
       const newGames = await fetchGames(page, pageSize);
-
+  
       if (newGames.length < pageSize) {
         setHasMore(false);
       }
-
-      setGames((prevGames) => [...prevGames, ...newGames]);
+  
+      // เพิ่มข้อมูลใหม่เฉพาะที่ไม่ซ้ำกับข้อมูลเก่า
+      setGames((prevGames) => {
+        const allGames = [...prevGames, ...newGames];
+        const uniqueGames = Array.from(new Set(allGames.map((game) => game.id)))
+          .map((id) => allGames.find((game) => game.id === id));
+        return uniqueGames;
+      });
       setLoading(false);
     };
-
+  
     loadGames();
   }, [page]);
+  
 
   // กรองเกมตามเงื่อนไข
   const filteredGames = games.filter((game) => {

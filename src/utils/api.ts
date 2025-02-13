@@ -31,14 +31,25 @@ export async function fetchGenres() {
   }
 }
 
-export async function fetchGameDetails(id: string) {
+export const fetchGameDetails = async (gameId: string) => {
   try {
-    const response = await fetch(`${BASE_URL}/games/${id}?key=${API_KEY}`);
-    if (!response.ok) throw new Error("Failed to fetch game details");
-
-    return await response.json();
+    const res = await fetch(`${BASE_URL}/games/${gameId}?key=${API_KEY}`);
+    if (!res.ok) throw new Error("Failed to fetch game details");
+    return await res.json();
   } catch (error) {
-    console.error("Error fetching game details:", error);
+    console.error(error);
     return null;
   }
-}
+};
+
+export const fetchGameScreenshots = async (gameId: string) => {
+  try {
+    const res = await fetch(`${BASE_URL}/games/${gameId}/screenshots?key=${API_KEY}`);
+    if (!res.ok) throw new Error("Failed to fetch screenshots");
+    const data = await res.json();
+    return data.results; // เป็น array ของ screenshots
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+};

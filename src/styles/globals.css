@@ -30,11 +30,6 @@ body {
   border: 1px solid #ccc;
 }
 
-.game-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 16px;
-}
 
 .game-item {
   text-align: center;
@@ -65,8 +60,10 @@ body {
 .load-more:hover {
   background-color: #005bb5;
 }
+
 .load-more-trigger {
-  height: 1px; /* พื้นที่ที่เล็กพอสำหรับ observer */
+  height: 1px;
+  /* พื้นที่ที่เล็กพอสำหรับ observer */
 }
 
 /* styles/global.css หรือ .module.css */
@@ -135,9 +132,11 @@ body {
 
 /* Game Detail */
 .game-detail {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
+  display: grid;
+  /* ปรับขนาดให้เป็น 250px */
+  gap: 20px;
+  width: 100%;
+  /* ให้กริดขยายเต็มพื้นที่ */
 }
 
 .game-header {
@@ -160,3 +159,4 @@ body {
   gap: 20px;
   margin-top: 10px;
 }
+
