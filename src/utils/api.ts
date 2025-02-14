@@ -53,3 +53,29 @@ export const fetchGameScreenshots = async (gameId: string) => {
     return [];
   }
 };
+
+
+export async function fetchPopularGames() {
+  try {
+    // หาวันที่เริ่มต้นและสิ้นสุดของเดือนนี้ (YYYY-MM-DD)
+    const today = new Date();
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0]; 
+    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
+
+    // ดึงข้อมูลเกมที่วางจำหน่ายในเดือนนี้ของปีนี้ (เรียงตามวันที่วางจำหน่ายล่าสุด)
+    const res = await fetch(`${BASE_URL}/games?key=${API_KEY}&ordering=-released&released=${startOfMonth},${endOfMonth}`);
+
+    if (!res.ok) throw new Error("Failed to fetch popular games");
+
+    const data = await res.json();
+    return { 
+      results: data.results, 
+      month: today.getMonth(), 
+      year: today.getFullYear() 
+    }; // ส่งข้อมูลเดือนและปีด้วย
+  } catch (error) {
+    console.error(error);
+    return { results: [], month: null, year: null };
+  }
+}
+
