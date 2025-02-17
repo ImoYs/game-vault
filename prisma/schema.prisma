@@ -22,24 +22,15 @@ model User {
   comments  Comment[] // เชื่อมโยงกับคอมเมนต์ที่ผู้ใช้โพสต์
 }
 
-model Game {
-  id          String    @id @default(uuid())
-  title       String
-  description String
-  createdAt   DateTime  @default(now())
-  comments    Comment[] // เชื่อมโยงกับคอมเมนต์ของเกมนี้
-}
-
 model Comment {
-  id        String   @id @default(uuid()) // รหัสคอมเมนต์
-  content   String   // ข้อความคอมเมนต์
-  createdAt DateTime @default(now()) // เวลาที่โพสต์คอมเมนต์
-  userId    String   // รหัสผู้ใช้ที่โพสต์คอมเมนต์
-  gameId    String   // รหัสเกมที่เกี่ยวข้องกับคอมเมนต์
+  id        String   @id @default(uuid()) 
+  content   String   
+  createdAt DateTime @default(now()) 
+  userId    String   
+  gameId    String   
 
-  user      User     @relation(fields: [userId], references: [id]) // เชื่อมโยงกับผู้ใช้
-  game      Game     @relation(fields: [gameId], references: [id]) // เชื่อมโยงกับเกม
-
-  @@index([gameId]) // สร้างดัชนีสำหรับการค้นหาคอมเมนต์ตามเกม
+  user      User     @relation(fields: [userId], references: [id]) 
+  @@index([gameId]) 
 }
+
 

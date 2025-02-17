@@ -52,4 +52,31 @@ export const fetchGameScreenshots = async (gameId: string) => {
     console.error(error);
     return [];
   }
+
 };
+
+export const fetchGameTrailers = async (id: string) => {
+  try {
+    const response = await fetch(`${BASE_URL}/games/${id}/movies?key=${API_KEY}`);
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch game trailers: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    // ตรวจสอบว่า API มี key `results` หรือไม่
+    if (!data?.results) {
+      console.warn("No trailers found for this game.");
+      return []; // ถ้าไม่มี results ให้ return empty array
+    }
+
+    return data?.results ?? [];
+  } catch (error) {
+    console.error("Error fetching game trailers:", error);
+    return [];
+  }
+};
+
+
+
