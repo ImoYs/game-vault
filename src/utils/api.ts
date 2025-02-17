@@ -81,7 +81,7 @@ export const fetchGameTrailers = async (id: string) => {
 
 
 
-};
+
 
 
 export async function fetchPopularGames() {
