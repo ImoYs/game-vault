@@ -81,6 +81,9 @@ export const fetchGameTrailers = async (id: string) => {
 
 
 
+
+
+
 export async function fetchPopularGames() {
   try {
     // Get the current year
