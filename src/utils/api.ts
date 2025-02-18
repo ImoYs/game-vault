@@ -55,12 +55,25 @@ export const fetchGameScreenshots = async (gameId: string) => {
 
 };
 
-export async function fetchPopularGames() {
+export const fetchRandomGames = async (count = 5) => {
   try {
-    // หาวันที่เริ่มต้นและสิ้นสุดของเดือนนี้ (YYYY-MM-DD)
-    const today = new Date();
-    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
-    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
+    const games = [];
+    for (let i = 0; i < count; i++) {
+      const randomId = Math.floor(Math.random() * 1000); // Adjust range as needed
+      console.log(Fetching Game ID: ${ randomId });
+
+      const response = await fetch(`${BASE_URL}/games/${randomId}?key=${API_KEY}`);
+      if (!response.ok) continue; // Skip if fetch fails
+
+      const data = await response.json();
+      if (data) games.push(data);
+    }
+    return games;
+  } catch (error) {
+    console.error("Error fetching games:", error);
+    return [];
+  }
+};
 
 
 export async function fetchPopularGames(genre) {
@@ -71,11 +84,12 @@ export async function fetchPopularGames(genre) {
     if (!res.ok) throw new Error("Failed to fetch popular games");
 
     const data = await res.json();
+
+    // Return the results based on genre without any further filtering
     return {
       results: data.results,
-      month: today.getMonth(),
-      year: today.getFullYear()
-    }; // ส่งข้อมูลเดือนและปีด้วย
+      genre,
+    };
   } catch (error) {
     console.error(error);
     return { results: [], genre };
