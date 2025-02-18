@@ -3,8 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { fetchGameDetails, fetchGameScreenshots, fetchGameTrailers } from "@/utils/api";
 import Navbar from "@/components/Navbar/Navbar";
-import GameTrailers from "@/components/game/GameTrailers"; // ✅ เรียกใช้ GameTrailers Component
-import NavSidebar from "@/components/Navbar/NavSidebar";
+
 import { useParams } from "next/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
@@ -53,7 +52,7 @@ export default function GameDetailPage() {
   return (
     <main className="game-detail bg-white text-black">
       <Navbar />
-      <NavSidebar />
+      
       <br />
 
       <div className="game-header">

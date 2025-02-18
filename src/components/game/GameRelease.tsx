@@ -11,32 +11,40 @@ import "swiper/css/navigation";
 
 export default function PopularGames() {
   const [games, setGames] = useState<any[]>([]);
-  const [month, setMonth] = useState<string | null>(null);
-  const [year, setYear] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [genre, setGenre] = useState<string>("action"); // ค่าเริ่มต้นเป็น "action"
 
   useEffect(() => {
     const loadPopularGames = async () => {
       setLoading(true);
-      const { results, month, year } = await fetchPopularGames();
+      const { results } = await fetchPopularGames(genre); // ดึงข้อมูลจาก API ตาม genre
+
       setGames(results);
-      setMonth(
-        ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][month]
-      );
-      setYear(year);
       setLoading(false);
     };
 
     loadPopularGames();
-  }, []);
+  }, [genre]); // Fetch ใหม่เมื่อ genre เปลี่ยน
 
   return (
     <div className="container mx-auto p-4">
-      {month && year && (
-        <h1 className="text-3xl font-bold text-center mb-6">
-          Popular Games Released in {month} {year}
-        </h1>
-      )}
+      <div className="flex justify-center mb-4">
+        <select
+          className="p-2 border rounded-md"
+          value={genre}
+          onChange={(e) => setGenre(e.target.value)}
+        >
+          <option value="action">Action</option>
+          <option value="adventure">Adventure</option>
+          <option value="rpg">RPG</option>
+          <option value="strategy">Strategy</option>
+          <option value="sports">Sports</option>
+        </select>
+      </div>
+
+      <h1 className="text-3xl font-bold text-center mb-6">
+        Popular {genre.charAt(0).toUpperCase() + genre.slice(1)} Games
+      </h1>
 
       {loading ? (
         <p className="text-center">Loading...</p>

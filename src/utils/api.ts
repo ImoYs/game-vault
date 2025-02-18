@@ -62,8 +62,11 @@ export async function fetchPopularGames() {
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
     const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
 
-    // ดึงข้อมูลเกมที่วางจำหน่ายในเดือนนี้ของปีนี้ (เรียงตามวันที่วางจำหน่ายล่าสุด)
-    const res = await fetch(`${BASE_URL}/games?key=${API_KEY}&ordering=-released&released=${startOfMonth},${endOfMonth}`);
+
+export async function fetchPopularGames(genre) {
+  try {
+    // ดึงข้อมูลเกมตาม Genre ที่ระบุ
+    const res = await fetch(`${BASE_URL}/games?key=${API_KEY}&genres=${genre}`);
 
     if (!res.ok) throw new Error("Failed to fetch popular games");
 
@@ -75,7 +78,7 @@ export async function fetchPopularGames() {
     }; // ส่งข้อมูลเดือนและปีด้วย
   } catch (error) {
     console.error(error);
-    return { results: [], month: null, year: null };
+    return { results: [], genre };
   }
 }
 
