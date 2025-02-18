@@ -60,7 +60,7 @@ export const fetchRandomGames = async (count = 5) => {
     const games = [];
     for (let i = 0; i < count; i++) {
       const randomId = Math.floor(Math.random() * 1000); // Adjust range as needed
-      console.log(Fetching Game ID: ${ randomId });
+      console.log(`Fetching Game ID: ${randomId}`);
 
       const response = await fetch(`${BASE_URL}/games/${randomId}?key=${API_KEY}`);
       if (!response.ok) continue; // Skip if fetch fails
@@ -74,7 +74,6 @@ export const fetchRandomGames = async (count = 5) => {
     return [];
   }
 };
-
 
 export async function fetchPopularGames(genre) {
   try {
