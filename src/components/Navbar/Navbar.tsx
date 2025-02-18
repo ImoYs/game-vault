@@ -17,17 +17,17 @@ export default function Navbar() {
     <nav className="bg-black text-white shadow-md">
       <div className="container mx-auto flex justify-between items-center p-4">
         <div className="text-xl font-bold">
-          <Link href="/">My Website</Link>
+          <Link href="/">GAME VAULT</Link>
         </div>
         <div className="space-x-4">
           <Link href="/" className="hover:underline">
             Home
           </Link>
           <Link href="/games" className="hover:underline">
-            Games
+            All-Games
           </Link>
           <Link href="/comment" className="hover:underline">
-          commenttest
+          {/* commenttest */}
           </Link>
 
           {session ? (
@@ -35,7 +35,7 @@ export default function Navbar() {
               <Link href="/account" className="hover:underline">
                 Account
               </Link>
-              <span className="font-bold">{session.user?.email}</span>
+              <span className="font-bold">{session.user?.name}</span>
               <button
                 onClick={handleLogout}
                 className="hover:underline text-red-400"

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { fetchGameDetails, fetchGameScreenshots, fetchGameTrailers } from "@/utils/api";
 import Navbar from "@/components/Navbar/Navbar";
+import GameTrailers from "@/components/game/GameTrailers"; // ✅ เรียกใช้ GameTrailers Component
 import NavSidebar from "@/components/Navbar/NavSidebar";
 import { useParams } from "next/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -66,7 +67,8 @@ export default function GameDetailPage() {
           <img src={game.background_image} alt={game.name} className="w-full h-auto rounded-lg" />
         </div>
 
-        {/* Game Trailers */}
+        {/* ✅ เรียกใช้ GameTrailers Component */}
+        <GameTrailers gameId={id as string} />
 
         {/* Screenshots */}
         <div className="col-span-4 col-start-2">
