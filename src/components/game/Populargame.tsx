@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { fetchGames } from "@/utils/api"; // ใช้ API fetchGames
+import { fetchGames } from "@/utils/api/index"; // ใช้ API fetchGames
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, Navigation } from "swiper/modules"; // นำเข้าโมดูลที่จำเป็น
 import "swiper/css"; // สไตล์พื้นฐานของ Swiper

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { fetchGameTrailers } from "@/utils/api"; // ✅ นำเข้า API ดึงข้อมูล Trailer
+import { fetchGameTrailers } from "@/utils/api/trailers"; // ✅ นำเข้า API ดึงข้อมูล Trailer
 
 interface GameTrailersProps {
   gameId: string;

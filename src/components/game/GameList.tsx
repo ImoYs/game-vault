@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { fetchGames, fetchGenres } from "@/utils/api";
+import { fetchGames, fetchGenres } from "@/utils/api/index";
 
 export default function GameList() {
   const [games, setGames] = useState<any[]>([]);

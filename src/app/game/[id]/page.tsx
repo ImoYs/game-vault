@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { fetchGameDetails, fetchGameScreenshots, fetchGameTrailers } from "@/utils/api";
+import { fetchGameDetails, fetchGameScreenshots, fetchGameTrailers } from "@/utils/api/index";
 import Navbar from "@/components/Navbar/Navbar";
 
 import { useParams } from "next/navigation";
@@ -11,6 +11,9 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import CommentSection from "@/components/Comment/CommentSection"; // import คอมโพเนนต์ที่แยกแล้ว
+import GameTrailers from "@/components/GameDetails/GameTrailers"; // ✅ นำเข้า Component Trailers
+import GameStores from "@/components/GameDetails/GameStores"; // 
+
 
 export default function GameDetailPage() {
   const [game, setGame] = useState<any>(null);
@@ -52,7 +55,7 @@ export default function GameDetailPage() {
   return (
     <main className="game-detail bg-white text-black">
       <Navbar />
-      
+
       <br />
 
       <div className="game-header">
@@ -149,6 +152,9 @@ export default function GameDetailPage() {
             ))}
           </ul>
         </div>
+
+        {/* ✅ เรียกใช้ GameStores Component */}
+        <GameStores gameId={id} />
 
         {/* System Requirements */}
         <div className="col-span-2 col-end-6 mt-6">

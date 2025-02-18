@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { fetchPopularGames } from "@/utils/api"; // ใช้ API fetchPopularGames
+import { fetchPopularGames } from "@/utils/api/index"; // ใช้ API fetchPopularGames
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import "swiper/css";
