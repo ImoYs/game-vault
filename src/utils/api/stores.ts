@@ -18,19 +18,9 @@ export const storeMapping: Record<number, { name: string; logo: string }> = {
     6: { name: "Nintendo", logo: "/" },
     7: { name: "Xbox", logo: "/" },
     8: { name: "Google Play", logo: "/" },
-    9: { name: "9", logo: "/" },
+    9: { name: "itch.io", logo: "/" },
     10: { name: "10", logo: "/" },
     11: { name: "Epic", logo: "/" },
-    12: { name: "12", logo: "/" },
-    13: { name: "13", logo: "/" },
-    14: { name: "14", logo: "/" },
-    15: { name: "15", logo: "/" },
-    16: { name: "16", logo: "/" },
-    17: { name: "17", logo: "/" },
-    18: { name: "18", logo: "/" },
-    19: { name: "19", logo: "/" },
-    20: { name: "20", logo: "/" },
-    21: { name: "21", logo: "/" },
 
 };
 

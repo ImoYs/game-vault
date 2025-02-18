@@ -13,7 +13,8 @@ import "swiper/css/pagination";
 import CommentSection from "@/components/Comment/CommentSection"; // import คอมโพเนนต์ที่แยกแล้ว
 import GameTrailers from "@/components/GameDetails/GameTrailers"; // ✅ นำเข้า Component Trailers
 import GameStores from "@/components/GameDetails/GameStores"; // 
-
+import GameDevelopmentTeam from "@/components/GameDetails/GameDev";
+import GameAdditions from "@/components/GameDetails/GameAdditions";
 
 export default function GameDetailPage() {
   const [game, setGame] = useState<any>(null);
@@ -117,6 +118,7 @@ export default function GameDetailPage() {
           </p>
         </div>
 
+
         {/* Ratings, Genres, Released */}
         <div className="col-span-2 col-end-6">
           <h3 className="font-bold text-lg">⭐ Ratings</h3>
@@ -180,6 +182,16 @@ export default function GameDetailPage() {
               </a>
             </p>
           )}
+        </div>
+
+        {/* ✅ เรียกใช้ GameDevelopmentTeam Component */}
+        <div className="col-span-4 col-start-2 mt-6">
+          <GameDevelopmentTeam gameId={id} />
+        </div>
+
+        {/* ✅ เรียกใช้ GameAdditions Component */}
+        <div className="col-span-4 col-start-2 mt-6">
+          <GameAdditions />
         </div>
 
         {/* Comment Section */}
