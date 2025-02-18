@@ -81,30 +81,58 @@ export const fetchGameTrailers = async (id: string) => {
 
 
 
-};
-
-
 export async function fetchPopularGames() {
   try {
-    // หาวันที่เริ่มต้นและสิ้นสุดของเดือนนี้ (YYYY-MM-DD)
+    // Get the current year
     const today = new Date();
-    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0]; 
-    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
+    const currentYear = today.getFullYear();
 
-    // ดึงข้อมูลเกมที่วางจำหน่ายในเดือนนี้ของปีนี้ (เรียงตามวันที่วางจำหน่ายล่าสุด)
-    const res = await fetch(`${BASE_URL}/games?key=${API_KEY}&ordering=-released&released=${startOfMonth},${endOfMonth}`);
+    // ดึงข้อมูลเกมทั้งหมด
+    const res = await fetch(`${BASE_URL}/games?key=${API_KEY}`);
 
     if (!res.ok) throw new Error("Failed to fetch popular games");
 
     const data = await res.json();
+
+    // Filter games by current year, 'recommended' rating, and reviews_count > 1000
+    const recommendedGames = data.results.filter(game => {
+      const releaseDate = new Date(game.released);
+      const releaseYear = releaseDate.getFullYear();
+
+      return (
+        game.ratings.some(rating => rating.title === 'recommended') && 
+        game.reviews_count > 1000 &&
+        releaseYear === currentYear // Check if the release year is the current year
+      );
+    });
+
+    // Return only the recommended games released in the current year
     return { 
-      results: data.results, 
-      month: today.getMonth(), 
-      year: today.getFullYear() 
-    }; // ส่งข้อมูลเดือนและปีด้วย
+      results: recommendedGames,
+      year: currentYear
+    };
   } catch (error) {
     console.error(error);
-    return { results: [], month: null, year: null };
+    return { results: [], year: null };
   }
 }
 
+export const fetchRandomGames = async (count = 5) => {
+  try {
+    const games = [];
+    for (let i = 0; i < count; i++) {
+      const randomId = Math.floor(Math.random() * 1000); // Adjust range as needed
+      console.log(`Fetching Game ID: ${randomId}`);
+      
+      const response = await fetch(`${BASE_URL}/games/${randomId}?key=${API_KEY}`);
+      if (!response.ok) continue; // Skip if fetch fails
+      
+      const data = await response.json();
+      if (data) games.push(data);
+    }
+    return games;
+  } catch (error) {
+    console.error("Error fetching games:", error);
+    return [];
+  }
+};
