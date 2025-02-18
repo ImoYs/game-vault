@@ -11,16 +11,16 @@ export interface StoreLink {
 // ✅ ต้อง export storeMapping ออกไป
 export const storeMapping: Record<number, { name: string; logo: string }> = {
     1: { name: "Steam", logo: "/Steam_logo.png" },
-    2: { name: "Microsoft", logo: "/" },
-    3: { name: "playstation", logo: "/" },
-    4: { name: "Apple Store", logo: "/" },
-    5: { name: "GOG", logo: "/" },
-    6: { name: "Nintendo", logo: "/" },
-    7: { name: "Xbox", logo: "/" },
-    8: { name: "Google Play", logo: "/" },
-    9: { name: "itch.io", logo: "/" },
+    2: { name: "Microsoft", logo: "/microsoft.png" },
+    3: { name: "playstation", logo: "/playstation.png" },
+    4: { name: "Apple Store", logo: "/Apple_Store.png" },
+    5: { name: "GOG", logo: "/gog.png" },
+    6: { name: "Nintendo", logo: "/nintendo.png" },
+    7: { name: "Xbox", logo: "/xbox.png" },
+    8: { name: "Google Play", logo: "/Google_Play.png" },
+    9: { name: "itch.io", logo: "/itch.png" },
     10: { name: "10", logo: "/" },
-    11: { name: "Epic", logo: "/" },
+    11: { name: "Epic", logo: "/Epic.png" },
 
 };
 
