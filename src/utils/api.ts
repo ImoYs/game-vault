@@ -81,45 +81,6 @@ export const fetchGameTrailers = async (id: string) => {
 
 
 
-
-
-
-export async function fetchPopularGames() {
-  try {
-    // Get the current year
-    const today = new Date();
-    const currentYear = today.getFullYear();
-
-    // ดึงข้อมูลเกมทั้งหมด
-    const res = await fetch(`${BASE_URL}/games?key=${API_KEY}`);
-
-    if (!res.ok) throw new Error("Failed to fetch popular games");
-
-    const data = await res.json();
-
-    // Filter games by current year, 'recommended' rating, and reviews_count > 1000
-    const recommendedGames = data.results.filter(game => {
-      const releaseDate = new Date(game.released);
-      const releaseYear = releaseDate.getFullYear();
-
-      return (
-        game.ratings.some(rating => rating.title === 'recommended') && 
-        game.reviews_count > 1000 &&
-        releaseYear === currentYear // Check if the release year is the current year
-      );
-    });
-
-    // Return only the recommended games released in the current year
-    return { 
-      results: recommendedGames,
-      year: currentYear
-    };
-  } catch (error) {
-    console.error(error);
-    return { results: [], year: null };
-  }
-}
-
 export const fetchRandomGames = async (count = 5) => {
   try {
     const games = [];
@@ -139,3 +100,24 @@ export const fetchRandomGames = async (count = 5) => {
     return [];
   }
 };
+
+
+export async function fetchPopularGames(genre) {
+  try {
+    // ดึงข้อมูลเกมตาม Genre ที่ระบุ
+    const res = await fetch(`${BASE_URL}/games?key=${API_KEY}&genres=${genre}`);
+
+    if (!res.ok) throw new Error("Failed to fetch popular games");
+
+    const data = await res.json();
+
+    // Return the results based on genre without any further filtering
+    return {
+      results: data.results,
+      genre,
+    };
+  } catch (error) {
+    console.error(error);
+    return { results: [], genre };
+  }
+}
