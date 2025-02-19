@@ -1,42 +1,26 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { fetchGameDetails, fetchGameScreenshots, fetchGameTrailers } from "@/utils/api/index";
+import { fetchGameDetails } from "@/utils/api/index";
 import Navbar from "@/components/Navbar/Navbar";
-
 import { useParams } from "next/navigation";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import CommentSection from "@/components/Comment/CommentSection"; // import คอมโพเนนต์ที่แยกแล้ว
-import GameTrailers from "@/components/GameDetails/GameTrailers"; // ✅ นำเข้า Component Trailers
-import GameStores from "@/components/GameDetails/GameStores"; // 
+import CommentSection from "@/components/Comment/CommentSection";
+import GameTrailers from "@/components/GameDetails/GameTrailers";
+import GameStores from "@/components/GameDetails/GameStores";
 import GameDevelopmentTeam from "@/components/GameDetails/GameDev";
 import GameAdditions from "@/components/GameDetails/GameAdditions";
 
 export default function GameDetailPage() {
-  const [game, setGame] = useState<any>(null);
-  const [screenshots, setScreenshots] = useState<any[]>([]);
-  const [trailers, setTrailers] = useState<any[]>([]);
+  const [game, setGame] = useState(null);
   const { id } = useParams();
+  const [isExpanded, setIsExpanded] = useState(false);
+  const truncatedDescription = game?.description_raw?.slice(0, 300) || "";
 
-  const [isExpanded, setIsExpanded] = useState(false); // ใช้สำหรับควบคุมการขยายข้อความ
-  const truncatedDescription = game?.description_raw?.slice(0, 300) || ''; // ตัดข้อความให้เหลือ 200 ตัวอักษร
-
-  // ฟังก์ชันดึงข้อมูลเกม
   const fetchData = useCallback(async () => {
     if (!id) return;
     try {
       const gameResponse = await fetchGameDetails(id);
       setGame(gameResponse);
-
-      const screenshotsResponse = await fetchGameScreenshots(id);
-      setScreenshots(screenshotsResponse);
-
-      const trailersResponse = await fetchGameTrailers(id);
-      setTrailers(trailersResponse);
     } catch (error) {
       console.error("Error fetching game details:", error);
     }
@@ -50,156 +34,104 @@ export default function GameDetailPage() {
     return <p className="text-center text-gray-500">Loading game details...</p>;
   }
 
-  const pcPlatform = game?.platforms?.find((p: any) => p.platform.id === 4);
+  const pcPlatform = game?.platforms?.find((p) => p.platform.id === 4);
   const requirements = pcPlatform?.requirements;
 
   return (
-    <main className="game-detail bg-white text-black">
+    <main className="bg-white text-black min-h-screen">
       <Navbar />
+      <div className="w-full px-6">
+        <h1 className="text-4xl font-extrabold text-center my-6">{game.name}</h1>
 
-      <br />
+        {/* Grid Layout */}
+        <div className="grid grid-cols-8 gap-6">
+          {/* ช่องซ้าย ว่างไว้ */}
+          <div className="col-span-1"></div>
 
-      <div className="game-header">
-        <h1 className="text-3xl font-bold mb-4">{game.name}</h1>
-      </div>
-
-      {/* Grid สำหรับจัดตำแหน่งข้อมูล */}
-      <div className="grid grid-cols-6 gap-4 mt-6">
-        {/* รูปภาพ */}
-        <div className="col-span-4 col-start-2">
-          <img src={game.background_image} alt={game.name} className="w-full h-auto rounded-lg" />
-        </div>
-
-        {/* ✅ เรียกใช้ GameTrailers Component */}
-        <GameTrailers gameId={id as string} />
-
-        {/* Screenshots */}
-        <div className="col-span-4 col-start-2">
-          {screenshots?.length > 0 ? (
-            <Swiper modules={[Navigation, Pagination]} navigation pagination={{ clickable: true }} className="w-full h-96">
-              {screenshots.map((screenshot) => (
-                <SwiperSlide key={screenshot.id}>
-                  <img
-                    src={screenshot.image}
-                    alt={`Screenshot ${screenshot.id}`}
-                    className="w-full h-full object-cover rounded-lg"
-                    onError={(e) => console.error("Image failed to load:", screenshot.image)}
-                  />
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          ) : (
-            <p className="text-gray-500">No screenshots available</p>
-          )}
-        </div>
-
-        {/* About Game */}
-        <div className="col-start-2 col-end-4">
-          <h3 className="font-bold text-lg">📝 ABOUT THIS GAME</h3>
-          <p className="text-gray-600">
-            {isExpanded ? game.description_raw : truncatedDescription}
-            {/* ถ้าเป็นโหมดขยาย (isExpanded), จะแสดงข้อความทั้งหมด */}
-            {!isExpanded && game.description_raw.length > 300 && (
-              <button
-                onClick={() => setIsExpanded(true)}
-                className="text-blue-500 cursor-pointer ml-1"
-              >
-                Read more
-              </button>
-            )}
-            {isExpanded && game.description_raw.length > 300 && (
-              <button
-                onClick={() => setIsExpanded(false)}
-                className="text-blue-500 cursor-pointer ml-1"
-              >
-                Read less
-              </button>
-            )}
-          </p>
-        </div>
-
-
-        {/* Ratings, Genres, Released */}
-        <div className="col-span-2 col-end-6">
-          <h3 className="font-bold text-lg">⭐ Ratings</h3>
-          <p>Metacritic: {game.metacritic ?? "N/A"}</p>
-          <h3 className="font-bold text-lg">🕹️ Genres</h3>
-          <ul className="text-gray-600">
-            {game.genres.map((genre: any) => (
-              <li key={genre.id}>{genre.name}</li>
-            ))}
-          </ul>
-          <h3 className="font-bold text-lg">📅 Released</h3>
-          <p>{game.released}</p>
-        </div>
-
-        {/* Tags */}
-        <div className="col-span-4 col-start-2 mt-6">
-          <h3 className="font-bold text-lg">🏷 Tags</h3>
-          <div className="flex flex-wrap gap-2">
-            {game.tags.map((tag: any) => (
-              <span key={tag.id} className="bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-sm">
-                {tag.name}
-              </span>
-            ))}
+          {/* GameTrailers (4 คอลัมน์) */}
+          <div className="col-span-4">
+            <GameTrailers gameId={id} />
           </div>
+
+          {/* Game Info (2 คอลัมน์) */}
+          <div className="col-span-2 bg-white p-4 rounded-lg">
+            <img src={game.background_image} alt={game.name} className="w-full h-64 object-cover rounded-lg shadow-lg mb-4" />
+            <h3 className="text-lg font-bold">⭐ Ratings</h3>
+            <p>Metacritic: {game.metacritic ?? "N/A"}</p>
+            <h3 className="text-lg font-bold">🎮 Genres</h3>
+            <ul>{game.genres.map((genre) => <li key={genre.id}>{genre.name}</li>)}</ul>
+            <h3 className="text-lg font-bold">📅 Released</h3>
+            <p>{game.released}</p>
+          </div>
+
+          {/* ช่องขวา ว่างไว้ */}
+          <div className="col-span-1"></div>
         </div>
 
-        {/* Platforms */}
-        <div className="col-start-2 col-end-4 mt-6">
-          <h3 className="font-bold text-lg">🎮 Platforms</h3>
-          <ul className="text-gray-600">
-            {game.platforms.map((platform: any) => (
-              <li key={platform.platform.id}>{platform.platform.name}</li>
-            ))}
-          </ul>
+        {/* ส่วน About & Tags */}
+        <div className="grid grid-cols-8 gap-6 mt-6">
+          <div className="col-span-1"></div>
+          <div className="col-span-4  p-4 rounded-lg">
+            <h3 className="text-lg font-bold">📖 ABOUT THIS GAME</h3>
+            <p>{isExpanded ? game.description_raw : truncatedDescription}</p>
+            {game.description_raw.length > 300 && (
+              <button onClick={() => setIsExpanded(!isExpanded)} className="text-blue-500">{isExpanded ? "Read less" : "Read more"}</button>
+            )}
+          </div>
+          <div className="col-span-2  p-4 rounded-lg">
+            <h3 className="text-lg font-bold">🏷️ Tags</h3>
+            <div className="flex flex-wrap gap-2">
+              {game.tags.map((tag) => <span key={tag.id} className="bg-gray-700 text-white px-3 py-1 rounded">{tag.name}</span>)}
+            </div>
+            <GameStores gameId={id} />
+          </div>
+          <div className="col-span-1"></div>
         </div>
 
-        {/* ✅ เรียกใช้ GameStores Component */}
-        <GameStores gameId={id} />
-
-        {/* System Requirements */}
-        <div className="col-span-2 col-end-6 mt-6">
-          <h3 className="font-bold text-lg">💻 System Requirements (PC)</h3>
-          {requirements ? (
-            <details className="cursor-pointer">
-              <summary className="text-blue-600 underline">View System Requirements</summary>
-              {requirements.minimum && <p><strong>Minimum:</strong> {requirements.minimum}</p>}
-              {requirements.recommended && <p><strong>Recommended:</strong> {requirements.recommended}</p>}
-            </details>
-          ) : (
-            <p className="text-gray-500">No system requirements available</p>
-          )}
+        {/* System Requirements, Reddit, DLC, Development Team, Comments */}
+        <div className="grid grid-cols-8 gap-6 mt-6">
+          <div className="col-span-1"></div>
+          <div className="col-span-4  p-4 rounded-lg">
+            <h3 className="text-lg font-bold">💻 System Requirements (PC)</h3>
+            {requirements ? (
+              <details>
+                <summary className="text-blue-500 cursor-pointer">View Requirements</summary>
+                {requirements.minimum && <p><strong>Min:</strong> {requirements.minimum}</p>}
+                {requirements.recommended && <p><strong>Rec:</strong> {requirements.recommended}</p>}
+              </details>
+            ) : <p>No system requirements available</p>}
+          </div>
+          <div className="col-span-2  p-4 rounded-lg">
+            <h3 className="text-lg font-bold">🌐 Reddit</h3>
+            {game.reddit_url && <a href={game.reddit_url} className="text-blue-500">Visit Reddit Community</a>}
+          </div>
+          <div className="col-span-1"></div>
         </div>
 
-        {/* Visit Reddit Community */}
-        <div className="col-span-4 col-start-2 mt-6">
-          <h3 className="font-bold text-lg">Reddit</h3>
-          {game?.reddit_url && (
-            <p className="text-blue-600 mt-2">
-              🔗 <a href={game.reddit_url} target="_blank" rel="noopener noreferrer" className="underline">
-                Visit Reddit Community
-              </a>
-            </p>
-          )}
+        <div className="grid grid-cols-8 gap-6 mt-6">
+          <div className="col-span-1"></div>
+          <div className="col-span-4">
+            <GameDevelopmentTeam gameId={id} />
+          </div>
+          <div className="col-span-2">
+            <GameAdditions />
+          </div>
+          <div className="col-span-1"></div>
+
+
         </div>
 
-        {/* ✅ เรียกใช้ GameDevelopmentTeam Component */}
-        <div className="col-span-4 col-start-2 mt-6">
-          <GameDevelopmentTeam gameId={id} />
+        <div className="grid grid-cols-8 gap-6 mt-6">
+          <div className="col-span-1"></div> {/* ช่องซ้ายว่าง */}
+
+          <div className="col-span-6">
+            <CommentSection gameId={id} />
+          </div>
+
+          <div className="col-span-1"></div> {/* ช่องขวาว่าง */}
         </div>
 
-        {/* ✅ เรียกใช้ GameAdditions Component */}
-        <div className="col-span-4 col-start-2 mt-6">
-          <GameAdditions />
-        </div>
-
-        {/* Comment Section */}
-        <div className="col-span-4 col-start-2 mt-6">
-          <CommentSection gameId={id} />
-        </div>
       </div>
-
     </main>
   );
 }

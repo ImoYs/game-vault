@@ -6,8 +6,7 @@ export default function GamesPage() {
   return (
     <main>
       <Navbar/>
-      
-      <h1>🔥 All Games</h1>
+      <h1><br></br></h1>
       <GameList />
     </main>
   );

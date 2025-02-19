@@ -12,7 +12,7 @@ export interface StoreLink {
 export const storeMapping: Record<number, { name: string; logo: string }> = {
     1: { name: "Steam", logo: "/Steam_logo.png" },
     2: { name: "Microsoft", logo: "/microsoft.png" },
-    3: { name: "playstation", logo: "/playstation.png" },
+    3: { name: "playstation", logo: "/PS.png" },
     4: { name: "Apple Store", logo: "/Apple_Store.png" },
     5: { name: "GOG", logo: "/gog.png" },
     6: { name: "Nintendo", logo: "/nintendo.png" },
