@@ -1,41 +1,46 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-import { fetchPopularGames } from "@/utils/api/index"; // API fetchPopularGames
+import { fetchPopularGames } from "@/utils/api/index";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 
-const GENRES = ["action", "adventure", "rpg", "strategy", "sports"];
+const GENRES = ["action", "adventure", "role-playing-games-rpg", "strategy", "sports"];
 
 export default function PopularGames() {
   const [gamesByGenre, setGamesByGenre] = useState<{ [key: string]: any[] }>({});
   const [loading, setLoading] = useState<boolean>(true);
+  const loadedGenres = useRef(new Set()); // ✅ Track already loaded genres
 
   useEffect(() => {
     const loadAllGenres = async () => {
       setLoading(true);
       const data = await Promise.all(
         GENRES.map(async (genre) => {
+          if (loadedGenres.current.has(genre)) return { genre, results: gamesByGenre[genre] }; // ✅ Skip if already loaded
           const { results } = await fetchPopularGames(genre);
+          loadedGenres.current.add(genre); // ✅ Mark genre as loaded
           return { genre, results };
         })
       );
 
-      const mappedData = data.reduce((acc, { genre, results }) => {
-        acc[genre] = results;
-        return acc;
-      }, {} as { [key: string]: any[] });
+      setGamesByGenre((prev) => {
+        const newData = { ...prev };
+        data.forEach(({ genre, results }) => {
+          newData[genre] = results;
+        });
+        return newData;
+      });
 
-      setGamesByGenre(mappedData);
       setLoading(false);
     };
 
     loadAllGenres();
-  }, []);
+  }, []); // ✅ Empty dependency array to run only on mount
 
   return (
     <div className="container mx-auto p-4">
