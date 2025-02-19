@@ -30,7 +30,7 @@ export async function fetchPopularGames(genre) {
     if (!res.ok) throw new Error("Failed to fetch popular games");
 
     const data = await res.json();
-
+    //console.log(`API response for ${genre}:`, data);
     // Return the results based on genre without any further filtering
     return {
       results: data.results,
