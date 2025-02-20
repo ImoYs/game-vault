@@ -9,22 +9,28 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 
-const GENRES = ["action", "adventure", "role-playing-games-rpg", "strategy", "sports"];
+const GENRES = [
+  { key: "action", label: "Action" },
+  { key: "adventure", label: "Adventure" },
+  { key: "role-playing-games-rpg", label: "RPG" },
+  { key: "strategy", label: "Strategy" },
+  { key: "sports", label: "Sports" }
+];
 
 export default function PopularGames() {
   const [gamesByGenre, setGamesByGenre] = useState<{ [key: string]: any[] }>({});
   const [loading, setLoading] = useState<boolean>(true);
-  const loadedGenres = useRef(new Set()); // ✅ Track already loaded genres
+  const loadedGenres = useRef(new Set());
 
   useEffect(() => {
     const loadAllGenres = async () => {
       setLoading(true);
       const data = await Promise.all(
-        GENRES.map(async (genre) => {
-          if (loadedGenres.current.has(genre)) return { genre, results: gamesByGenre[genre] }; // ✅ Skip if already loaded
-          const { results } = await fetchPopularGames(genre);
-          loadedGenres.current.add(genre); // ✅ Mark genre as loaded
-          return { genre, results };
+        GENRES.map(async ({ key }) => {
+          if (loadedGenres.current.has(key)) return { genre: key, results: gamesByGenre[key] };
+          const { results } = await fetchPopularGames(key);
+          loadedGenres.current.add(key);
+          return { genre: key, results };
         })
       );
 
@@ -40,43 +46,47 @@ export default function PopularGames() {
     };
 
     loadAllGenres();
-  }, []); // ✅ Empty dependency array to run only on mount
+  }, []);
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold text-center mb-6">Popular Games</h1>
+    <div className="container mx-auto p-6">
+      <h1 className="text-4xl font-bold text-center mb-8 text-gray-900">Popular Games</h1>
 
       {loading ? (
-        <p className="text-center">Loading...</p>
+        <p className="text-center text-lg text-gray-600">Loading...</p>
       ) : (
-        GENRES.map((genre) => (
-          <div key={genre} className="mb-10">
-            <h2 className="text-2xl font-semibold mb-4 capitalize">
-              {genre.charAt(0).toUpperCase() + genre.slice(1)} Games
-            </h2>
+        GENRES.map(({ key, label }) => (
+          <div key={key} className="mb-12">
+            <h2 className="text-3xl font-bold mb-6 text-gray-800">{label}</h2>
 
-            {gamesByGenre[genre] && gamesByGenre[genre].length > 0 ? (
+            {gamesByGenre[key] && gamesByGenre[key].length > 0 ? (
               <Swiper
                 modules={[Autoplay, Pagination, Navigation]}
-                slidesPerView={5}
-                spaceBetween={20}
+                slidesPerView={3}
+                spaceBetween={30}
                 loop={true}
                 autoplay={{ delay: 3000, disableOnInteraction: false }}
                 pagination={{ clickable: true }}
                 navigation={true}
+                breakpoints={{
+                  640: { slidesPerView: 1 },
+                  768: { slidesPerView: 2 },
+                  1024: { slidesPerView: 3 },
+                }}
+                className="rounded-lg overflow-hidden"
               >
-                {gamesByGenre[genre].map((game) => (
-                  <SwiperSlide key={game.id}>
-                    <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-                      <Link href={`/game/${game.id}`}>
+                {gamesByGenre[key].map((game) => (
+                  <SwiperSlide key={game.id} className="p-2">
+                    <div className="bg-white shadow-xl rounded-lg overflow-hidden transform transition duration-300 hover:scale-105">
+                      <Link href={`/game/${game.id}`} className="block">
                         <img
                           src={game.background_image || "/default-image.jpg"}
                           alt={game.name}
-                          className="w-full h-48 object-cover"
+                          className="w-full h-56 object-cover"
                         />
                         <div className="p-4">
-                          <h3 className="text-xl font-semibold">{game.name}</h3>
-                          <p className="text-sm text-gray-600 mt-2">
+                          <h3 className="text-2xl font-bold text-gray-900 mb-2">{game.name}</h3>
+                          <p className="text-md text-gray-700 mt-2">
                             ⭐ Rating: {game.rating ? game.rating.toFixed(1) : "N/A"} / 5
                           </p>
                         </div>
@@ -86,7 +96,7 @@ export default function PopularGames() {
                 ))}
               </Swiper>
             ) : (
-              <p className="text-center">No popular games found</p>
+              <p className="text-center text-lg text-gray-600">No popular games found</p>
             )}
           </div>
         ))

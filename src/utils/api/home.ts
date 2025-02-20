@@ -2,7 +2,7 @@
 const API_KEY = process.env.NEXT_PUBLIC_RAWG_API_KEY;
 const BASE_URL = "https://api.rawg.io/api";
 
-export const fetchRandomGames = async (count = 5) => {
+export const fetchRandomGames = async (count = 6) => {
   try {
     const games = [];
     for (let i = 0; i < count; i++) {

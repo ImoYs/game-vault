@@ -7,8 +7,6 @@ export default function HomePage() {
   return (
     <main>
       <Navbar/>
-      
-      <h1>🔥 Top 10 Games</h1>
       <Random/>
       <Pgame />
       <GameRelease/>
