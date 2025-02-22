@@ -2,16 +2,17 @@
 
 import { useEffect, useState, useRef } from "react";
 import { fetchGameScreenshots, fetchGameTrailers } from "@/utils/api/index";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules";
+import { Swiper, SwiperSlide, useSwiper } from "swiper/react";
+import { Navigation, FreeMode } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import "swiper/css/pagination";
+import "swiper/css/free-mode";
 
 export default function GameMedia({ gameId }: { gameId: string }) {
   const [media, setMedia] = useState<any[]>([]);
-  const swiperRef = useRef<any>(null); // สร้าง useRef เพื่ออ้างอิงไปยัง Swiper หลัก
-  const [activeVideo, setActiveVideo] = useState<number | null>(null); // เก็บข้อมูลว่าวิดีโอไหนกำลังเล่นอยู่
+  const [activeIndex, setActiveIndex] = useState(0);
+  const videoRefs = useRef<{ [key: number]: HTMLVideoElement | null }>({});
+  const swiper = useSwiper(); // Call useSwiper unconditionally at the top
 
   useEffect(() => {
     const fetchMedia = async () => {
@@ -33,101 +34,114 @@ export default function GameMedia({ gameId }: { gameId: string }) {
     fetchMedia();
   }, [gameId]);
 
+  useEffect(() => {
+    if (media.length > 0 && media[activeIndex].type === "video") {
+      const nextIndex = activeIndex + 1;
+      if (media[nextIndex] && media[nextIndex].type === "video") {
+        const videoElement = videoRefs.current[nextIndex];
+        if (videoElement) {
+          videoElement.load();
+        }
+      }
+    }
+  }, [activeIndex, media]);
+
+
+
+  // Early return if no media.  Hooks are called *before* this.
   if (!media.length) {
     return <p className="text-gray-400 text-center">No media available</p>;
   }
 
+
   return (
-    <div className="w-full">
-      {/* Main Swiper for images/videos */}
-      <div className="w-full h-72 lg:h-96 mb-4">
+    <div className="w-full max-w-4xl mx-auto">
+      <div className="w-full aspect-video bg-black relative rounded-lg overflow-hidden shadow-lg">
+        {media[activeIndex].type === "video" ? (
+          <video
+            ref={(el) => (videoRefs.current[activeIndex] = el)}
+            key={media[activeIndex].id}
+            className="w-full h-full object-cover"
+            controls
+            preload="auto"
+            autoPlay
+          >
+            <source src={media[activeIndex].url} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        ) : (
+          <img
+            src={media[activeIndex].url}
+            alt={`Screenshot ${media[activeIndex].id}`}
+            className="w-full h-full object-cover"
+          />
+        )}
+      </div>
+
+      <div className="w-full mt-4">
         <Swiper
-          ref={swiperRef} // ใช้ ref ที่สร้างไว้
-          modules={[Navigation, Pagination]}
+          slidesPerView={3}
+          spaceBetween={8}
           navigation
-          pagination={{ clickable: true }}
-          className="w-full h-full"
-        >
-          {media.map((item, index) => (
-            <SwiperSlide key={item.id} className="flex justify-center items-center">
-              {item.type === "video" ? (
-                <div className="relative w-full h-full">
-                  {activeVideo === index ? (
-                    <iframe
-                      width="100%"
-                      height="100%"
-                      src={`${item.url}?autoplay=1`}
-                      title={`Trailer ${item.id}`}
-                      allowFullScreen
-                      className="rounded-lg shadow-lg"
-                    />
-                  ) : (
-                    <button
-                      onClick={() => setActiveVideo(index)} // คลิกเพื่อเล่นวิดีโอ
-                      className="absolute inset-0 w-full h-full bg-black bg-opacity-90 flex justify-center items-center text-white text-2xl"
-                    >
-                      Play
-                    </button>
-                  )}
-                </div>
-              ) : (
-                <img
-                  src={item.url}
-                  alt={`Screenshot ${item.id}`}
-                  className="w-full h-full object-cover rounded-lg shadow-lg" // รูปแบบสี่เหลี่ยมผืนผ้า
-                />
-              )}
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </div>
-
-      {/* Thumbnail Swiper */}
-      <div className="w-full h-24 mb-4">
-        <Swiper
-          slidesPerView={5}
-          spaceBetween={10}
-          className="w-full h-full"
+          freeMode
           breakpoints={{
-            640: {
-              slidesPerView: 5,
-            },
-            768: {
-              slidesPerView: 7,
-            },
-            1024: {
-              slidesPerView: 10,
-            },
+            480: { slidesPerView: 4, spaceBetween: 10 },
+            640: { slidesPerView: 5, spaceBetween: 10 },
+            768: { slidesPerView: 6, spaceBetween: 12 },
+            1024: { slidesPerView: 8, spaceBetween: 16 },
+            1280: { slidesPerView: 10, spaceBetween: 20 },
           }}
+          className="w-full"
+          modules={[Navigation, FreeMode]} // Important: Add the modules here
         >
-          {media.map((item, index) => (
-            <SwiperSlide key={item.id} className="flex justify-center items-center">
-              <button
-                onClick={() => {
-                  if (swiperRef.current) {
-                    const slideIndex = media.findIndex((mediaItem) => mediaItem.id === item.id);
-                    swiperRef.current.swiper.slideTo(slideIndex); // ใช้ swiperRef เพื่อเปลี่ยนสไลด์
-                  }
-                }}
-                className="w-20 h-14 bg-black bg-opacity-90 rounded-lg overflow-hidden shadow-md flex justify-center items-center" // เพิ่ม flex เพื่อจัดกึ่งกลาง
-              >
-                {item.type === "video" ? (
-                  <div className="w-full h-full">
-                    {/* Thumbnail video ไม่มีข้อความ "Video" แล้ว */}
-                  </div>
-                ) : (
-                  <img
-                    src={item.url}
-                    alt={`Screenshot ${item.id}`}
-                    className="object-cover w-full h-full" // ปรับให้ภาพครอบคลุมเต็ม button
-                  />
-                )}
-              </button>
-            </SwiperSlide>
-          ))}
+          {media.map((item, index) => {
+            // Calculate the style *outside* the button, but *after* useSwiper
+            const buttonStyle = swiper
+              ? {
+                  width: `calc((100% / ${swiper.params.slidesPerView}) - ${swiper.params.spaceBetween}px)`,
+                  height: "auto",
+                  paddingBottom: item.type === "video" ? "56.25%" : "0",
+                }
+              : {};
+
+            return (
+              <SwiperSlide key={item.id}>
+                <button
+                  onClick={() => setActiveIndex(index)}
+                  className={`relative rounded-lg overflow-hidden transition-all ${
+                    activeIndex === index
+                      ? "border-2 border-blue-500 scale-105"
+                      : "border border-transparent"
+                  }`}
+                  style={buttonStyle} // Use the pre-calculated style
+                >
+                  {item.type === "video" && (
+                    <div className="absolute inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+                      <span className="text-white text-2xl">▶</span>
+                    </div>
+                  )}
+                  {item.type === "video" ? (
+                    <video
+                      ref={(el) => (videoRefs.current[index] = el)}
+                      className="w-full h-full object-cover"
+                      preload="metadata"
+                      muted
+                    >
+                      <source src={item.url} type="video/mp4" />
+                    </video>
+                  ) : (
+                    <img
+                      src={item.url}
+                      alt={`Thumbnail ${item.id}`}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                </button>
+              </SwiperSlide>
+            );
+          })}
         </Swiper>
       </div>
-
     </div>
   );
 }

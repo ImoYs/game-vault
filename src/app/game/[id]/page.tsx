@@ -7,13 +7,13 @@ import { useParams } from "next/navigation";
 import CommentSection from "@/components/Comment/CommentSection";
 import GameTrailers from "@/components/GameDetails/GameTrailers";
 import GameStores from "@/components/GameDetails/GameStores";
-import GameDevelopmentTeam from "@/components/GameDetails/GameDev";
 import GameAdditions from "@/components/GameDetails/GameAdditions";
 
 export default function GameDetailPage() {
   const [game, setGame] = useState(null);
-  const { id } = useParams();
+  const { id } = useParams() as { id: string };
   const [isExpanded, setIsExpanded] = useState(false);
+  const [showAllTags, setShowAllTags] = useState(false);
   const truncatedDescription = game?.description_raw?.slice(0, 300) || "";
 
   const fetchData = useCallback(async () => {
@@ -45,17 +45,34 @@ export default function GameDetailPage() {
 
         {/* Grid Layout */}
         <div className="grid grid-cols-8 gap-6">
-          {/* ช่องซ้าย ว่างไว้ */}
-          <div className="col-span-1"></div>
+          <div className="col-span-1"></div> {/* ช่องซ้ายว่าง */}
 
-          {/* GameTrailers (4 คอลัมน์) */}
+          {/* แถว 1: Trailer + Screenshots (4 ช่อง) | รูปเกม (2 ช่อง) */}
           <div className="col-span-4">
             <GameTrailers gameId={id} />
           </div>
+          <div className="col-span-2">
+            <img src={game.background_image} alt={game.name} className="w-full h-64 object-cover rounded-lg shadow-lg" />
+          </div>
 
-          {/* Game Info (2 คอลัมน์) */}
-          <div className="col-span-2 bg-white p-4 rounded-lg">
-            <img src={game.background_image} alt={game.name} className="w-full h-64 object-cover rounded-lg shadow-lg mb-4" />
+          <div className="col-span-1"></div> {/* ช่องขวาว่าง */}
+        </div>
+
+        {/* แถว 2: ABOUT THIS GAME (4 ช่อง) | Game Info (1 ช่อง) | Platforms (1 ช่อง) */}
+        <div className="grid grid-cols-8 gap-6 mt-6">
+          <div className="col-span-1"></div>
+
+          <div className="col-span-4 bg-white p-4 rounded-lg">
+            <h3 className="text-lg font-bold">📖 ABOUT THIS GAME</h3>
+            <p>{isExpanded ? game.description_raw : truncatedDescription}</p>
+            {game.description_raw.length > 300 && (
+              <button onClick={() => setIsExpanded(!isExpanded)} className="text-blue-500">
+                {isExpanded ? "Read less" : "Read more"}
+              </button>
+            )}
+          </div>
+
+          <div className="col-span-1 bg-white p-4 rounded-lg">
             <h3 className="text-lg font-bold">⭐ Ratings</h3>
             <p>Metacritic: {game.metacritic ?? "N/A"}</p>
             <h3 className="text-lg font-bold">🎮 Genres</h3>
@@ -64,34 +81,38 @@ export default function GameDetailPage() {
             <p>{game.released}</p>
           </div>
 
-          {/* ช่องขวา ว่างไว้ */}
+          <div className="col-span-1 bg-white p-4 rounded-lg">
+            <h3 className="text-lg font-bold">🎮 Platforms</h3>
+            <ul>{game.platforms.map((p) => <li key={p.platform.id}>{p.platform.name}</li>)}</ul>
+          </div>
+
           <div className="col-span-1"></div>
         </div>
 
-        {/* ส่วน About & Tags */}
+        {/* แถว 3: GameStores (4 ช่อง) | Tags (2 ช่อง) */}
         <div className="grid grid-cols-8 gap-6 mt-6">
           <div className="col-span-1"></div>
-          <div className="col-span-4  p-4 rounded-lg">
-            <h3 className="text-lg font-bold">📖 ABOUT THIS GAME</h3>
-            <p>{isExpanded ? game.description_raw : truncatedDescription}</p>
-            {game.description_raw.length > 300 && (
-              <button onClick={() => setIsExpanded(!isExpanded)} className="text-blue-500">{isExpanded ? "Read less" : "Read more"}</button>
-            )}
-          </div>
-          <div className="col-span-2  p-4 rounded-lg">
-            <h3 className="text-lg font-bold">🏷️ Tags</h3>
-            <div className="flex flex-wrap gap-2">
-              {game.tags.map((tag) => <span key={tag.id} className="bg-gray-700 text-white px-3 py-1 rounded">{tag.name}</span>)}
-            </div>
+          <div className="col-span-4">
             <GameStores gameId={id} />
           </div>
+          <div className="col-span-2">
+            <h3 className="text-lg font-bold">🏷️ Tags</h3>
+            <div className="flex flex-wrap gap-2">
+              {(showAllTags ? game.tags : game.tags.slice(0, 4)).map((tag) => (
+                <span key={tag.id} className="bg-gray-700 text-white px-3 py-1 rounded">{tag.name}</span>
+              ))}
+            </div>
+            <button onClick={() => setShowAllTags(!showAllTags)} className="text-blue-500 mt-2">
+              {showAllTags ? "Show less" : "Show more"}
+            </button>
+          </div>
           <div className="col-span-1"></div>
         </div>
 
-        {/* System Requirements, Reddit, DLC, Development Team, Comments */}
+        {/* แถว 4: System Requirements (3 ช่อง) | Reddit (3 ช่อง) */}
         <div className="grid grid-cols-8 gap-6 mt-6">
           <div className="col-span-1"></div>
-          <div className="col-span-4  p-4 rounded-lg">
+          <div className="col-span-3">
             <h3 className="text-lg font-bold">💻 System Requirements (PC)</h3>
             {requirements ? (
               <details>
@@ -101,36 +122,32 @@ export default function GameDetailPage() {
               </details>
             ) : <p>No system requirements available</p>}
           </div>
-          <div className="col-span-2  p-4 rounded-lg">
+          <div className="col-span-3">
             <h3 className="text-lg font-bold">🌐 Reddit</h3>
             {game.reddit_url && <a href={game.reddit_url} className="text-blue-500">Visit Reddit Community</a>}
           </div>
           <div className="col-span-1"></div>
         </div>
 
+        {/* แถว 5: GameAdditions (6 ช่อง) */}
         <div className="grid grid-cols-8 gap-6 mt-6">
           <div className="col-span-1"></div>
-          <div className="col-span-4">
-            <GameDevelopmentTeam gameId={id} />
-          </div>
-          <div className="col-span-2">
+          <div className="col-span-6">
             <GameAdditions />
           </div>
           <div className="col-span-1"></div>
-
-
         </div>
 
+        {/* แถว 6: Comment Section (6 ช่อง) */}
         <div className="grid grid-cols-8 gap-6 mt-6">
-          <div className="col-span-1"></div> {/* ช่องซ้ายว่าง */}
-
+          <div className="col-span-1"></div>
           <div className="col-span-6">
             <CommentSection gameId={id} />
           </div>
-
-          <div className="col-span-1"></div> {/* ช่องขวาว่าง */}
+          <div className="col-span-1"></div>
         </div>
 
+        {/* <GameDevelopmentTeam gameId={id} /> */}
       </div>
     </main>
   );
