@@ -41,7 +41,7 @@ export default function GameDetailPage() {
     <main className="bg-white text-black min-h-screen">
       <Navbar />
       <div className="w-full px-6">
-        <h1 className="text-4xl font-extrabold text-center my-6">{game.name}</h1>
+        <br></br><br></br>
 
         {/* Grid Layout */}
         <div className="grid grid-cols-8 gap-6">
@@ -51,8 +51,33 @@ export default function GameDetailPage() {
           <div className="col-span-4">
             <GameTrailers gameId={id} />
           </div>
+
           <div className="col-span-2">
-            <img src={game.background_image} alt={game.name} className="w-full h-64 object-cover rounded-lg shadow-lg" />
+            <img src={game.background_image} alt={game.name} className="w-full h-48 object-cover rounded-lg shadow-lg" />
+            <h2 className="text-4xl font-extrabold my-6">{game.name}</h2>
+
+            {/* Using grid for the specific layout */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <h3 className="text-lg font-bold"> Ratings</h3>
+                <p>Metacritic: {game.metacritic ?? "N/A"}</p>
+                <p>rating: {game.rating ?? "N/A"}</p>
+ 
+
+                <h3 className="text-lg font-bold mt-4"> Released</h3>
+                <p>{game.released}</p>
+
+                <h3 className="text-lg font-bold mt-4"> Genres</h3>
+                <p>{game.genres.map((genre) => genre.name).join(", ")}</p>
+
+
+              </div>
+
+              <div>
+                <h3 className="text-lg font-bold"> Platforms</h3>
+                <ul>{game.platforms.map((p) => <li key={p.platform.id}>{p.platform.name}</li>)}</ul>
+              </div>
+            </div>
           </div>
 
           <div className="col-span-1"></div> {/* ช่องขวาว่าง */}
@@ -63,7 +88,7 @@ export default function GameDetailPage() {
           <div className="col-span-1"></div>
 
           <div className="col-span-4 bg-white p-4 rounded-lg">
-            <h3 className="text-lg font-bold">📖 ABOUT THIS GAME</h3>
+            <h3 className="text-lg font-bold">ABOUT THIS GAME</h3>
             <p>{isExpanded ? game.description_raw : truncatedDescription}</p>
             {game.description_raw.length > 300 && (
               <button onClick={() => setIsExpanded(!isExpanded)} className="text-blue-500">
@@ -71,20 +96,18 @@ export default function GameDetailPage() {
               </button>
             )}
           </div>
-
-          <div className="col-span-1 bg-white p-4 rounded-lg">
-            <h3 className="text-lg font-bold">⭐ Ratings</h3>
-            <p>Metacritic: {game.metacritic ?? "N/A"}</p>
-            <h3 className="text-lg font-bold">🎮 Genres</h3>
-            <ul>{game.genres.map((genre) => <li key={genre.id}>{genre.name}</li>)}</ul>
-            <h3 className="text-lg font-bold">📅 Released</h3>
-            <p>{game.released}</p>
+          <div className="col-span-2">
+            <h3 className="text-lg font-bold">Tags</h3>
+            <div className="flex flex-wrap gap-2">
+              {(showAllTags ? game.tags : game.tags.slice(0, 4)).map((tag) => (
+                <span key={tag.id} className="bg-gray-700 text-white px-3 py-1 rounded">{tag.name}</span>
+              ))}
+            </div>
+            <button onClick={() => setShowAllTags(!showAllTags)} className="text-blue-500 mt-2">
+              {showAllTags ? "Show less" : "Show more"}
+            </button>
           </div>
 
-          <div className="col-span-1 bg-white p-4 rounded-lg">
-            <h3 className="text-lg font-bold">🎮 Platforms</h3>
-            <ul>{game.platforms.map((p) => <li key={p.platform.id}>{p.platform.name}</li>)}</ul>
-          </div>
 
           <div className="col-span-1"></div>
         </div>
@@ -95,17 +118,8 @@ export default function GameDetailPage() {
           <div className="col-span-4">
             <GameStores gameId={id} />
           </div>
-          <div className="col-span-2">
-            <h3 className="text-lg font-bold">🏷️ Tags</h3>
-            <div className="flex flex-wrap gap-2">
-              {(showAllTags ? game.tags : game.tags.slice(0, 4)).map((tag) => (
-                <span key={tag.id} className="bg-gray-700 text-white px-3 py-1 rounded">{tag.name}</span>
-              ))}
-            </div>
-            <button onClick={() => setShowAllTags(!showAllTags)} className="text-blue-500 mt-2">
-              {showAllTags ? "Show less" : "Show more"}
-            </button>
-          </div>
+
+
           <div className="col-span-1"></div>
         </div>
 
@@ -113,7 +127,7 @@ export default function GameDetailPage() {
         <div className="grid grid-cols-8 gap-6 mt-6">
           <div className="col-span-1"></div>
           <div className="col-span-3">
-            <h3 className="text-lg font-bold">💻 System Requirements (PC)</h3>
+            <h3 className="text-lg font-bold">System Requirements (PC)</h3>
             {requirements ? (
               <details>
                 <summary className="text-blue-500 cursor-pointer">View Requirements</summary>
@@ -123,7 +137,7 @@ export default function GameDetailPage() {
             ) : <p>No system requirements available</p>}
           </div>
           <div className="col-span-3">
-            <h3 className="text-lg font-bold">🌐 Reddit</h3>
+            <h3 className="text-lg font-bold">Reddit</h3>
             {game.reddit_url && <a href={game.reddit_url} className="text-blue-500">Visit Reddit Community</a>}
           </div>
           <div className="col-span-1"></div>
