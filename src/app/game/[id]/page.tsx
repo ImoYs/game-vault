@@ -8,6 +8,8 @@ import CommentSection from "@/components/Comment/CommentSection";
 import GameTrailers from "@/components/GameDetails/GameTrailers";
 import GameStores from "@/components/GameDetails/GameStores";
 import GameAdditions from "@/components/GameDetails/GameAdditions";
+import { format } from 'date-fns'; // Import ฟังก์ชัน format
+import { enUS } from 'date-fns/locale'; // Import locale ของ date-fns
 
 export default function GameDetailPage() {
   const [game, setGame] = useState(null);
@@ -60,12 +62,13 @@ export default function GameDetailPage() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <h3 className="text-lg font-bold"> Ratings</h3>
-                <p>Metacritic: {game.metacritic ?? "N/A"}</p>
+                {/* <p>Metacritic: {game.metacritic ?? "N/A"}</p> */}
                 <p>rating: {game.rating ?? "N/A"}</p>
  
 
                 <h3 className="text-lg font-bold mt-4"> Released</h3>
                 <p>{game.released}</p>
+                {format(new Date(game.released), 'dd MMM yyyy', { locale: enUS })}
 
                 <h3 className="text-lg font-bold mt-4"> Genres</h3>
                 <p>{game.genres.map((genre) => genre.name).join(", ")}</p>
