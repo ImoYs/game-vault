@@ -6,21 +6,32 @@ export const fetchRandomGames = async (count = 6) => {
   try {
     const games = [];
     for (let i = 0; i < count; i++) {
-      const randomId = Math.floor(Math.random() * 1000); // Adjust range as needed
+      const randomId = Math.floor(Math.random() * 1000); // ปรับช่วง ID ตามต้องการ
       console.log(`Fetching Game ID: ${randomId}`);
 
       const response = await fetch(`${BASE_URL}/games/${randomId}?key=${API_KEY}`);
-      if (!response.ok) continue; // Skip if fetch fails
+      if (!response.ok) continue; // ข้ามถ้าดึงข้อมูลไม่สำเร็จ
 
       const data = await response.json();
-      if (data) games.push(data);
+      if (!data) continue;
+
+      // ดึงข้อมูล screenshots
+      const screenshotsResponse = await fetch(`${BASE_URL}/games/${randomId}/screenshots?key=${API_KEY}`);
+      const screenshotsData = await screenshotsResponse.json();
+
+      // เพิ่ม screenshots ลงไปในข้อมูลเกม
+      games.push({
+        ...data,
+        screenshots: screenshotsData.results || [], // ตรวจสอบว่ามี screenshots หรือไม่
+      });
     }
     return games;
   } catch (error) {
     console.error("Error fetching games:", error);
     return [];
   }
-};
+}
+
 
 export async function fetchPopularGames(genre) {
   try {

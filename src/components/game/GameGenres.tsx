@@ -50,14 +50,14 @@ export default function PopularGames() {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-4xl font-bold text-center mb-8 text-gray-900">Popular Games</h1>
+      <h1 className="text-4xl font-bold text-center mb-8 text-gray-900">🎮 Popular Games by Genre 🎮</h1>
 
       {loading ? (
         <p className="text-center text-lg text-gray-600">Loading...</p>
       ) : (
         GENRES.map(({ key, label }) => (
           <div key={key} className="mb-12">
-            <h2 className="text-3xl font-bold mb-6 text-gray-800">{label}</h2>
+            <h2 className="text-3xl font-bold mb-6 text-gray-800 border-b-4 border-gray-300 pb-2">{label}</h2>
 
             {gamesByGenre[key] && gamesByGenre[key].length > 0 ? (
               <Swiper
@@ -82,12 +82,15 @@ export default function PopularGames() {
                         <img
                           src={game.background_image || "/default-image.jpg"}
                           alt={game.name}
-                          className="w-full h-56 object-cover"
+                          className="w-full h-56 object-cover rounded-t-lg"
                         />
                         <div className="p-4">
                           <h3 className="text-2xl font-bold text-gray-900 mb-2">{game.name}</h3>
-                          <p className="text-md text-gray-700 mt-2">
+                          <p className="text-md text-gray-700 mb-2">
                             ⭐ Rating: {game.rating ? game.rating.toFixed(1) : "N/A"} / 5
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            <span className="font-semibold">Platforms:</span> {game.platforms?.map((p: any) => p.platform.name).join(", ") || "Unknown"}
                           </p>
                         </div>
                       </Link>

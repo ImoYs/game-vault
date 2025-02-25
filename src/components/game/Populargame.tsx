@@ -63,9 +63,12 @@ export default function PopularGames() {
                   />
                   <div className="p-4">
                     <h3 className="text-2xl font-bold text-gray-900 mb-2">{game.name}</h3>
-                    <div className="flex items-center">
+                    <div className="flex items-center mb-2">
                       <span className="font-semibold text-gray-700 mr-2">Rating:</span>
                       <span className="text-yellow-500 font-bold">{game.rating || "No rating"}</span>
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      <span className="font-semibold">Platforms:</span> {game.platforms?.map((p: any) => p.platform.name).join(", ") || "Unknown"}
                     </div>
                   </div>
                 </Link>
