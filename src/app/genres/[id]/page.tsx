@@ -1,35 +1,31 @@
 "use client";
-import Navbar from "@/components/Navbar/Navbar";  // นำเข้า Navbar
+import Navbar from "@/components/Navbar/Navbar";
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation"; // ใช้ useParams เพื่อดึงค่า genre จาก URL
+import { useParams } from "next/navigation";
 import Link from "next/link";
-import { fetchGamesgenre } from "@/utils/api/gamegenres"; // ฟังก์ชันดึงข้อมูลเกมตาม genre
+import { fetchGamesgenre } from "@/utils/api/gamegenres";
 import TopGenresgame from "@/components/game/TopGenresgame";
 
-
-
 export default function Gamesgenre() {
-  const [games, setGames] = useState([]); // สถานะเก็บข้อมูลเกม
-  const [loading, setLoading] = useState(true); // สถานะการโหลด
-  const [page, setPage] = useState(1); // หน้าเริ่มต้น
-  const [hasMore, setHasMore] = useState(true); // ตรวจสอบว่ามีข้อมูลเพิ่มเติมหรือไม่
-  const [searchQuery, setSearchQuery] = useState(""); // สถานะเก็บคำค้นหา
-  const { id } = useParams(); // ดึงค่า genre จาก URL เช่น "rpg"
-  const selectedGenre = id || "action"; // ถ้าไม่มี genre ให้ใช้ "action" เป็นค่าเริ่มต้น
+  const [games, setGames] = useState([]); // เก็บข้อมูลเกมทั้งหมด
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const { id } = useParams();
+  const selectedGenre = id || "action";
 
   useEffect(() => {
     const loadGames = async () => {
       setLoading(true);
       try {
-        // ดึงข้อมูลเกมจาก API โดยใช้ genre และหน้า
         const { results } = await fetchGamesgenre(selectedGenre.toLowerCase(), page);
         if (results.length === 0) setHasMore(false);
 
-        // ตรวจสอบไม่ให้มีเกมซ้ำ โดยใช้ id ของเกม
         setGames((prevGames) => {
           const newGames = [...prevGames, ...results];
-          const uniqueGames = Array.from(new Set(newGames.map(game => game.id))) // กรองเกมที่ซ้ำ
-            .map(id => newGames.find(game => game.id === id)); // หามาใหม่จาก id
+          const uniqueGames = Array.from(new Set(newGames.map(game => game.id)))
+            .map(id => newGames.find(game => game.id === id));
           return uniqueGames;
         });
       } catch (error) {
@@ -39,26 +35,34 @@ export default function Gamesgenre() {
       }
     };
 
-    if (selectedGenre) loadGames(); // เรียกฟังก์ชันเมื่อ genre ถูกกำหนด
+    if (selectedGenre) loadGames();
   }, [selectedGenre, page]);
 
+  // ดึง 5 เกมแรกเป็นเกมแนะนำ
+  const topRecommendedGames = games.slice(0, 5);
+
+  // กรองเกมตามคำค้นหา
   const filteredGames = games.filter(game =>
-    game.name.toLowerCase().includes(searchQuery.toLowerCase()) // กรองเกมตามคำค้นหา
+    game.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   if (loading && games.length === 0) return <p className="text-center">Loading...</p>;
 
   return (
     <div>
-      {/* เพิ่ม Navbar ที่นี่ */}
-      
+      {/* Navbar */}
       <Navbar />
-      {/* <TopGenresgame genre={selectedGenre} /> */}
+
       <div className="container mx-auto p-6">
         <h1 className="text-3xl font-bold text-center mb-6">
           Popular {selectedGenre.toUpperCase()} Games
         </h1>
-        
+
+        {/* **เพิ่ม Top Recommended Games ด้านบน** */}
+        {topRecommendedGames.length > 0 && (
+          <TopGenresgame games={topRecommendedGames} />
+        )}
+
         {/* Search Bar */}
         <div className="mb-6 flex justify-center">
           <input
@@ -70,6 +74,7 @@ export default function Gamesgenre() {
           />
         </div>
 
+        {/* Grid แสดงรายการเกม */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredGames.length > 0 ? (
             filteredGames.map((game) => (
@@ -94,6 +99,7 @@ export default function Gamesgenre() {
           )}
         </div>
 
+        {/* Load More Button */}
         {hasMore && (
           <div className="flex justify-center mt-6">
             <button
