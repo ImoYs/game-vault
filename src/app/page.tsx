@@ -10,10 +10,10 @@ export default function HomePage() {
   return (
     <main>
       <Navbar/>
-      {/* <Random/>
+      <Random/>
       <Pgame />
       <Genres/>
-      <GameGenres/> */}
+      <GameGenres/>
       
     </main>
   );

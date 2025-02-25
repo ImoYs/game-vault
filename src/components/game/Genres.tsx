@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { fetchGenres } from "@/utils/api/index";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
@@ -54,7 +53,7 @@ export default function PopularGames() {
           {genres.map((genre) => (
             <SwiperSlide key={genre.id} className="p-2">
               <div className="bg-white shadow-xl rounded-lg overflow-hidden transform transition duration-300 hover:scale-105">
-                <Link href={`/genre/${genre.id}`} className="block">
+                <a href={`/genres/${genre.name}`} className="block">
                   <img
                     src={genre.screenshots?.[0]?.image || "/default-image.jpg"} // Using first screenshot image if available
                     alt={genre.name}
@@ -66,7 +65,7 @@ export default function PopularGames() {
                       <span className="font-semibold">Description:</span> {genre.description || "No description available"}
                     </div>
                   </div>
-                </Link>
+                </a>
               </div>
             </SwiperSlide>
           ))}
