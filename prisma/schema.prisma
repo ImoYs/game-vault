@@ -29,8 +29,12 @@ model Comment {
   updatedAt DateTime? @updatedAt  // เพิ่มฟิลด์นี้
   userId    String   
   gameId    String   
+  parentId  String?  // เพิ่ม field นี้ สำหรับ reply comments
 
-  user      User     @relation(fields: [userId], references: [id]) 
+  user      User     @relation(fields: [userId], references: [id])
+  parentComment Comment? @relation("CommentReplies", fields: [parentId], references: [id]) // Relation to parent comment (แก้ไข: ลบ relationName ที่ซ้ำซ้อนออก)
+  replies     Comment[]  @relation("CommentReplies") // Relation to child replies
+
   @@index([gameId]) 
 }
 
